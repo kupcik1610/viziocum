@@ -1,5 +1,20 @@
 import type { Metadata } from 'next';
-import ScriptsLoader from './ScriptsLoader';
+import SiteScripts from './SiteScripts';
+import SiteHeader from './components/SiteHeader';
+import SiteOffcanvas from './components/SiteOffcanvas';
+import SiteFooter from './components/SiteFooter';
+
+// Global stylesheets, in the original cascade order. Bootstrap and Font Awesome
+// come from npm; the rest are template-specific files (Helix Ultimate / SP Page
+// Builder) with no npm equivalent, kept verbatim under styles/. The Joomla/jQuery
+// runtime they shipped with has been removed and replaced by SiteScripts.
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import '../styles/css/animate.css';
+import '../styles/css/sppagebuilder.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../styles/css/system.css';
+import '../styles/css/template.css';
+import '../styles/css/preset5.css';
 
 export const metadata: Metadata = {
   title: 'Glaukómová a neurooftalmologická ambulancia Banská Bystrica',
@@ -7,21 +22,6 @@ export const metadata: Metadata = {
     'Oftalmologická glaukómová a neurooftalmologická ambulancia Banská Bystrica — MUDr. Mária Praženicová. Neštátne nezmluvné zdravotnícke zariadenie.',
   icons: { icon: '/images/viziocum_logo2.png' },
 };
-
-// Global stylesheets from the original Joomla template, in original order.
-const STYLES = [
-  '/media/vendor/joomla-custom-elements/css/joomla-alert.mineeda.css',
-  '/components/com_sppagebuilder/assets/css/font-awesome-6.min3ba3.css',
-  '/components/com_sppagebuilder/assets/css/font-awesome-v4-shims3ba3.css',
-  '/components/com_sppagebuilder/assets/css/animate.min3ba3.css',
-  '/components/com_sppagebuilder/assets/css/sppagebuilder3ba3.css',
-  '/components/com_sppagebuilder/assets/css/dynamic-content3ba3.css',
-  '/components/com_sppagebuilder/assets/css/magnific-popup.css',
-  '/templates/viziocum/css/bootstrap.min.css',
-  '/plugins/system/helixultimate/assets/css/system-j4.min.css',
-  '/templates/viziocum/css/template.css',
-  '/templates/viziocum/css/presets/preset5.css',
-];
 
 const BODY_CLASS =
   'site helix-ultimate hu com_sppagebuilder com-sppagebuilder view-page layout-default task-none sk-sk ltr sticky-header layout-fluid offcanvas-init offcanvs-position-right';
@@ -39,14 +39,27 @@ export default function RootLayout({
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
-        {STYLES.map((href) => (
-          <link key={href} rel="stylesheet" href={href} />
-        ))}
         <style>{`@media(min-width: 1400px) {.sppb-row-container { max-width: 1320px; }}`}</style>
       </head>
       <body className={BODY_CLASS}>
-        {children}
-        <ScriptsLoader />
+        <div className="body-wrapper">
+          <div className="body-innerwrapper">
+            <SiteHeader />
+            <section id="sp-main-body">
+              <div className="row">
+                <main id="sp-component" className="col-lg-12">
+                  <div className="sp-column">{children}</div>
+                </main>
+              </div>
+            </section>
+            <SiteFooter />
+          </div>
+        </div>
+        <SiteOffcanvas />
+        <a href="#" className="sp-scroll-up" aria-label="Scroll Up">
+          <span className="fas fa-angle-up" aria-hidden="true" />
+        </a>
+        <SiteScripts />
       </body>
     </html>
   );
