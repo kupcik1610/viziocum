@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "next",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["next", "dev", "-p", "3210"],
+      "port": 3210
+    },
+    {
+      "name": "original",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "3211"],
+      "cwd": "/Users/patrikkupco/viziocum/capture/viziocum.sk",
+      "port": 3211
+    }
+  ]
+}
