@@ -1,16 +1,12 @@
-import { readFileSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const dir = dirname(fileURLToPath(import.meta.url));
+import Article from '../components/Article';
 
 export default function Page() {
-  const css = readFileSync(join(dir, 'styles.css'), 'utf8');
-  const html = readFileSync(join(dir, 'content.html'), 'utf8');
   return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: css }} />
-      <div dangerouslySetInnerHTML={{ __html: html }} />
-    </>
+    <Article
+      file="app/zapozicanie-prenosneho-tonometra/content.html"
+      title="Zapožičanie prenosného tonometra"
+      subtitle="iCare HOME 2 — domáce meranie vnútroočného tlaku"
+      crumb={{ label: 'Domov', href: '/' }}
+    />
   );
 }

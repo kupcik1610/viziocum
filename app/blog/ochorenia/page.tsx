@@ -1,16 +1,26 @@
-import { readFileSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const dir = dirname(fileURLToPath(import.meta.url));
+import PageHero from '../../components/PageHero';
+import { DISEASES } from '../../components/diseases';
 
 export default function Page() {
-  const css = readFileSync(join(dir, 'styles.css'), 'utf8');
-  const html = readFileSync(join(dir, 'content.html'), 'utf8');
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: css }} />
-      <div dangerouslySetInnerHTML={{ __html: html }} />
+      <PageHero
+        title="Ochorenia"
+        subtitle="Vhodné na liečbu elektrostimuláciou"
+        crumb={{ label: 'Domov', href: '/' }}
+      />
+      <section className="section">
+        <div className="container disease-grid">
+          {DISEASES.map((d, i) => (
+            <a key={d.slug} className="disease-card fade-up" href={`/blog/ochorenia/${d.slug}/`}>
+              <div className="disease-card__num">{String(i + 1).padStart(2, '0')}</div>
+              <h3>{d.title}</h3>
+              <p>{d.excerpt}</p>
+              <span className="disease-card__more">Čítať viac →</span>
+            </a>
+          ))}
+        </div>
+      </section>
     </>
   );
 }

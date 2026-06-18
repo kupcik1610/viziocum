@@ -1,80 +1,77 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { navForPath, type NavItem } from './nav';
+import Icon from './Icon';
 
 const norm = (p: string) => '/' + p.replace(/^\/+|\/+$/g, '');
-
-function MenuLink({ item, active }: { item: NavItem; active: boolean }) {
-  const external = item.external
-    ? { target: '_blank', rel: 'noopener noreferrer' }
-    : {};
-  return (
-    <li className={`sp-menu-item${active ? ' current-item active' : ''}`}>
-      <a href={item.href} {...(active ? { 'aria-current': 'page' } : {})} {...external}>
-        {item.icon && <span className={item.icon} />} {item.label}
-      </a>
-    </li>
-  );
-}
-
-const Burger = () => (
-  <div className="burger-icon" aria-hidden="true">
-    <span />
-    <span />
-    <span />
-  </div>
-);
 
 export default function SiteHeader() {
   const pathname = usePathname() || '/';
   const items = navForPath(pathname);
   const home = items[0].href;
+  const [open, setOpen] = useState(false);
+
   const isActive = (item: NavItem) =>
     !item.external && norm(pathname) === norm(item.href);
 
+  // Lock scroll while the drawer is open and close it on route change.
+  useEffect(() => {
+    document.body.classList.toggle('drawer-open', open);
+    return () => document.body.classList.remove('drawer-open');
+  }, [open]);
+  useEffect(() => setOpen(false), [pathname]);
+
+  const linkProps = (item: NavItem) => ({
+    href: item.href,
+    className: item.cta ? 'nav__cta' : undefined,
+    ...(isActive(item) ? { 'aria-current': 'page' as const } : {}),
+    ...(item.external ? { target: '_blank', rel: 'noopener noreferrer' } : {}),
+  });
+
   return (
     <>
-      <div className="sticky-header-placeholder" />
-      <header id="sp-header">
-        <div className="container">
-          <div className="container-inner">
-            <div className="row">
-              <div id="sp-logo" className="col-auto">
-                <div className="sp-column">
-                  <span className="logo">
-                    <a href={home}>Viziocum s.r.o.</a>
-                  </span>
-                </div>
-              </div>
+      <header className="site-header">
+      <div className="container site-header__inner">
+        <a className="brand" href={home}>
+          Viziocum s.r.o.
+        </a>
 
-              <div id="sp-menu" className="col-auto flex-auto">
-                <div className="sp-column d-flex justify-content-end align-items-center">
-                  <nav className="sp-megamenu-wrapper d-flex" role="navigation">
-                    <ul className="sp-megamenu-parent menu-animation-none d-none d-lg-block">
-                      {items.map((item) => (
-                        <MenuLink key={item.href} item={item} active={isActive(item)} />
-                      ))}
-                    </ul>
-                  </nav>
+        <nav className="nav" aria-label="Hlavné menu">
+          {items.map((item) => (
+            <a key={item.href} {...linkProps(item)}>
+              {item.icon && <Icon name={item.icon} />}
+              {item.label}
+            </a>
+          ))}
+        </nav>
 
-                  {/* Single burger: shown only below the lg breakpoint where
-                      the mega-menu is hidden. */}
-                  <a
-                    id="offcanvas-toggler"
-                    aria-label="Menu"
-                    title="Menu"
-                    className="d-lg-none align-items-center"
-                    href="#"
-                  >
-                    <Burger />
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <button
+          className="burger"
+          aria-label="Menu"
+          aria-expanded={open}
+          onClick={() => setOpen(true)}
+        >
+          <span /><span /><span />
+        </button>
+      </div>
       </header>
+
+      <div className="drawer-backdrop" onClick={() => setOpen(false)} />
+      <aside className="drawer" aria-hidden={!open}>
+        <div className="drawer__head">
+          <a className="brand" href={home}>Viziocum s.r.o.</a>
+          <button className="drawer__close" aria-label="Zavrieť" onClick={() => setOpen(false)}>
+            <Icon name="close" />
+          </button>
+        </div>
+        <nav aria-label="Mobilné menu">
+          {items.map((item) => (
+            <a key={item.href} {...linkProps(item)}>{item.label}</a>
+          ))}
+        </nav>
+      </aside>
     </>
   );
 }
